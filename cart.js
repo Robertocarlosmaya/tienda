@@ -8,7 +8,6 @@ function updateCartIcon() {
     cartCountElement.textContent = totalItems;
 }
 
-// Función para agregar un producto al carrito
 function addToCart(productName, productPrice) {
     const existingProductIndex = cart.findIndex(product => product.name === productName);
 
@@ -25,11 +24,9 @@ function addToCart(productName, productPrice) {
         cart.push(product);
     }
 
-    // Actualizamos el ícono del carrito
-    updateCartIcon();
-
     // Guardamos el carrito en el almacenamiento local
     saveCart();
+    updateCartIcon();
 }
 
 // Función para guardar el carrito en el almacenamiento local
@@ -43,7 +40,7 @@ function loadCart() {
     if (savedCart) {
         cart = JSON.parse(savedCart);
         updateCartIcon();
-    }
+    } 
 }
 
 // Función para manejar el evento de agregar al carrito
@@ -67,3 +64,53 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', handleAddToCart);
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const productName = button.parentElement.querySelector('.card-title').textContent;
+
+            // Obtener la lista actual de la Local Storage
+            let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+            // Verificar si el producto ya está en la lista de deseos
+            if (!wishlist.includes(productName)) {
+                wishlist.push(productName);  // Añadir el nuevo producto
+
+                // Guardar de nuevo en la Local Storage
+                localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+                alert(`${productName} ha sido añadido a tu lista de deseos.`);
+            } else {
+                alert(`${productName} ya está en tu lista de deseos.`);
+            }
+        });
+    });
+});
+
+
+// Función para agregar productos al carrito desde la lista de deseos
+function addToCartFromWishlist(productName, productPrice) {
+    const existingProductIndex = cart.findIndex(product => product.name === productName);
+
+    if (existingProductIndex !== -1) {
+        // Si el producto ya está en el carrito, incrementamos la cantidad
+        cart[existingProductIndex].quantity += 1;
+    } else {
+        // Si no está en el carrito, lo agregamos como nuevo
+        const product = {
+            name: productName,
+            price: productPrice,
+            quantity: 1
+        };
+        cart.push(product);
+    }
+
+    // Actualizamos el ícono del carrito
+    updateCartIcon();
+
+    // Guardamos el carrito en el almacenamiento local
+    saveCart();
+}
