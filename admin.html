@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - Mezcal Street Crew</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Panel de Administrador</h1>
+        <nav>
+            <button id="logout-btn">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Bienvenido, Administrador</h2>
+        <p>Aquí puedes gestionar los productos, usuarios y pedidos.</p>
+        <!-- Aquí puedes agregar más funcionalidades de administrador -->
+    </main>
+
+    <footer>
+        <p>MEZCAL STREET CREW &copy; 2024</p>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            requireAdminAuth();
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        });
+    </script>
+</body>
+</html>
