@@ -40,8 +40,8 @@ function initializeTestUsers() {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     if (users.length === 0) {
         users.push(
-            { username: 'usuario1', password: 'Password1', role: 'user' },
-            { username: 'usuario2', password: 'Password2', role: 'user' }
+            { name: 'Usuario', surname: 'Uno', email: 'usuario1@example.com', username: 'usuario1', password: 'Password1', role: 'user' },
+            { name: 'Usuario', surname: 'Dos', email: 'usuario2@example.com', username: 'usuario2', password: 'Password2', role: 'user' }
         );
         localStorage.setItem('users', JSON.stringify(users));
     }
@@ -60,6 +60,9 @@ function handleLogin(event) {
         currentUser = {
             username: user.username,
             role: user.role,
+            name: user.name,
+            surname: user.surname,
+            email: user.email
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         localStorage.setItem('isLoggedIn', 'true');
@@ -79,10 +82,24 @@ function handleLogin(event) {
 
 function handleRegister(event) {
     event.preventDefault();
-    const username = document.getElementById('register-username').value;
+    const name = document.getElementById('register-name').value.trim();
+    const surname = document.getElementById('register-surname').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const username = document.getElementById('register-username').value.trim();
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-confirm-password').value;
     const errorElement = document.getElementById('register-error');
+
+    // Validación de campos
+    if (!name || !surname || !email || !username || !password || !confirmPassword) {
+        errorElement.textContent = 'Todos los campos son obligatorios';
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        errorElement.textContent = 'Por favor, ingrese un correo electrónico válido que termine en .com';
+        return;
+    }
 
     if (!validatePassword(password)) {
         errorElement.textContent = 'La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número.';
@@ -100,7 +117,15 @@ function handleRegister(event) {
         return;
     }
 
+    if (users.some(u => u.email === email)) {
+        errorElement.textContent = 'El correo electrónico ya está registrado';
+        return;
+    }
+
     const newUser = {
+        name,
+        surname,
+        email,
         username,
         password,
         role: 'user'
@@ -110,6 +135,9 @@ function handleRegister(event) {
     localStorage.setItem('users', JSON.stringify(users));
 
     currentUser = {
+        name: newUser.name,
+        surname: newUser.surname,
+        email: newUser.email,
         username: newUser.username,
         role: newUser.role,
     };
@@ -121,6 +149,11 @@ function handleRegister(event) {
 function validatePassword(password) {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
     return regex.test(password);
+}
+
+function validateEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email) && email.endsWith('.com');
 }
 
 function toggleForms(event) {
@@ -177,9 +210,9 @@ function userExists(username) {
     return users.some(u => u.username === username);
 }
 
-function changePassword(username, newPassword) {
+function changePassword(username, email, newPassword) {
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const userIndex = users.findIndex(u => u.username === username);
+    const userIndex = users.findIndex(u => u.username === username && u.email === email);
     
     if (userIndex !== -1) {
         users[userIndex].password = newPassword;
